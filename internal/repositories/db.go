@@ -10,13 +10,13 @@ import (
 )
 
 
-func DataBaseConnection(mode, dbhost, user, dbname, password string) {
+func DataBaseConnection(mode, dbhost, user, dbname, password string) (*gorm.DB, error){
 	conn, err := databaseSetUp(mode, dbhost, user, dbname, password)
 	if err != nil {
-		helper.PrintErrorMessage("404", err.Error())
-		return
+		return nil, helper.PrintErrorMessage("404", err.Error())
+		
 	}
-	NewcartInfra(conn)
+	return conn, nil
 }
 
 func databaseSetUp(mode, dbhost, user, dbname, password string) (*gorm.DB, error){

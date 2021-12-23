@@ -11,7 +11,7 @@ type cartInfra struct {
 	db *gorm.DB
 }
 
-func NewcartInfra(db *gorm.DB) cartPort.CartRepository {
+func NewcartRepositories(db *gorm.DB) cartPort.CartRepository {
 	return &cartInfra{db}
 }
 

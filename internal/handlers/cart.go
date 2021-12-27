@@ -2,21 +2,10 @@ package handlers
 
 import (
 	"cart/internal/core/domain"
-	"cart/internal/core/ports/cartPort"
 	"encoding/json"
 	"fmt"
 	"net/http"
 )
-
-type HTTPHandler struct {
-	cartService cartPort.CartService
-}
-
-func NewHTTPHandler(cartService cartPort.CartService) *HTTPHandler {
-	return &HTTPHandler{
-		cartService: cartService,
-	}
-}
 
 func (handler *HTTPHandler) Get(w http.ResponseWriter, r *http.Request) {
 	cart := domain.Cart{}

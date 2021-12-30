@@ -34,7 +34,9 @@ func Router(appPort, hostAddress string, handler *handlers.HTTPHandler) *chi.Mux
 
 func cartEndpoint(handler *handlers.HTTPHandler) http.Handler {
 	router := chi.NewRouter()
-	router.Post("/add", handler.Save)
-	router.Get("/get", handler.Get)
+	router.Post("/add", handler.AddToCart)
+	router.Delete("/delete/1", handler.DeleteAnItemFromCart)
+	router.Delete("/delete/all", handler.DeleteAllCartItems)
+	router.Put("/update/1", handler.UpdateACartItem)
 	return router
 }

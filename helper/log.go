@@ -24,33 +24,39 @@ func InitializeLog() {
 	log.SetOutput(f)
 }
 
-type bodyLogWriter struct {
+type customWriter struct {
 	http.ResponseWriter
-	body *bytes.Buffer
+	body   *bytes.Buffer
+	status int
 }
 
-func (writer bodyLogWriter) Write(b []byte) (int, error) {
-	return writer.body.Write(b)
+func (writer *customWriter) WriteHeader(status int) {
+	writer.status = status
+	// writer.ResponseWriter.WriteHeader(status)
+}
+
+func (writer *customWriter) Write(b []byte) (int, error) {
+	writer.body.Write(b)
+	return writer.ResponseWriter.Write(b)
 }
 
 func LogRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		myBodyLogWriter := &bodyLogWriter{
+		logWriter := &customWriter{
 			ResponseWriter: w,
-			body:           &bytes.Buffer{},
+			body:           bytes.NewBufferString(""),
+			status:         http.StatusOK,
 		}
-
-		next.ServeHTTP(myBodyLogWriter, r)
-
-		statusCode := r.Response.StatusCode
+		next.ServeHTTP(logWriter, r)
+		statusCode := logWriter.status
 		response := NoErrorsFound
 		level := "INFO"
-		if statusCode >= 400 {
-			response = myBodyLogWriter.body.String()
+		if statusCode >= http.StatusBadRequest {
+			response = logWriter.body.String()
 			level = "ERROR"
 		}
-		
+
 		data, err := json.Marshal(&LogStruct{
 			Method:          r.Method,
 			Level:           level,
@@ -68,11 +74,13 @@ func LogRequest(next http.Handler) http.Handler {
 			TimeStamp:       time.Now().Format(time.RFC3339),
 		})
 		if err != nil {
-			log.Fatal(err)
+			// log.Fatal(err)
+			log.Println(err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
 		}
 		log.Printf("%s\n", data)
+		next.ServeHTTP(logWriter, r)
 
-		next.ServeHTTP(myBodyLogWriter, r)
 	})
 }
 

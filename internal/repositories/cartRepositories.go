@@ -1,9 +1,9 @@
 package repositories
 
 import (
+	"cart/helper"
 	"cart/internal/core/domain"
 	"cart/internal/core/ports/cartPort"
-	"log"
 
 	"github.com/jinzhu/gorm"
 )
@@ -18,23 +18,22 @@ func NewCartRepositories(db *gorm.DB) cartPort.CartRepository {
 
 func (r *cartInfra) AddToCart(cart domain.Cart) (domain.Cart, error) {
 	newCart := domain.NewCart(cart.ProductId, cart.ProductName, cart.Quantity, cart.Price)
-
 	if err := r.db.Create(newCart).Error; err != nil {
-		log.Println(err)
+		return domain.Cart{}, helper.PrintErrorMessage(helper.DatabaseError, err.Error())
 	}
-	return newCart, nil
+	return *newCart, nil
 }
 
 func (r *cartInfra) DeleteAnItemFromCart(aCart domain.Cart, reference string) (string, error) {
 	if err := r.db.Delete(&aCart).Error; err != nil {
-		log.Println(err)
+		return "domain.Cart{}", helper.PrintErrorMessage(helper.DatabaseError, err.Error())
 	}
 	return reference, nil
 }
 
 func (r *cartInfra) DeleteAllCartItems(carts []domain.Cart) (string, error) {
 	if err := r.db.Delete(&carts).Error; err != nil {
-		log.Println(err)
+		return "domain.Cart{}", helper.PrintErrorMessage(helper.DatabaseError, err.Error())
 	}
 	return "empty", nil
 }
@@ -42,7 +41,7 @@ func (r *cartInfra) DeleteAllCartItems(carts []domain.Cart) (string, error) {
 func (r *cartInfra) UpdateACartItem(cart domain.Cart, reference string) (string, error) {
 	// get the product price, insert later
 	if err := r.db.Model(&cart).Where("reference = ?", reference).Select("Quantity", "Price").Updates(domain.Cart{Quantity: cart.Quantity - 1, Price: cart.Quantity * cart.Price}).Error; err != nil {
-		log.Println(err)
+		return "domain.Cart{}", helper.PrintErrorMessage(helper.DatabaseError, err.Error())
 	}
 
 	return "updated", nil

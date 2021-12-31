@@ -8,13 +8,14 @@ import (
 	"github.com/spf13/viper"
 )
 
+
 type ConfigStruct struct {
-	Mode               string `mapstructure:"mode"`
+	Mode               string `mapstructure:"app_mode"`
 	DbHost             string `mapstructure:"db_host"`
-	User               string `mapstructure:"user"`
+	User               string `mapstructure:"db_user"`
 	DbName             string `mapstructure:"db_name"`
-	Password           string `mapstructure:"password"`
-	Address            string `mapstructure:"address"`
+	Password           string `mapstructure:"db_pass"`
+	Address            string `mapstructure:"host_address"`
 	Port               string `mapstructure:"port"`
 	AppName            string `mapstructure:"app_name"`
 	LogDir             string `mapstructure:"log_dir"`
@@ -53,6 +54,7 @@ func LoadConfig() (string, string, string, string, string, string, string, strin
 
 func loadEnv(path string) (config ConfigStruct, err error) {
 	viper.AddConfigPath(path)
+	// cart-service.env
 	viper.SetConfigName("cart-service")
 	viper.SetConfigType("env")
 

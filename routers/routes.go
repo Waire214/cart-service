@@ -4,7 +4,6 @@ import (
 	"cart/internal/handlers"
 	"net/http"
 
-	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -22,8 +21,8 @@ func Router(appPort, hostAddress string, handler *handlers.HTTPHandler) *chi.Mux
 		MaxAge:           300,
 	}))
 
-	router.Use(middleware.Logger)
-
+	// router.Use(middleware.Logger)
+	// router.Use(helper.LogRequest)
 	router.Mount("/cart", cartEndpoint(handler))
 	router.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL(hostAddress+":"+appPort+"/swagger/doc.json"),
@@ -34,6 +33,7 @@ func Router(appPort, hostAddress string, handler *handlers.HTTPHandler) *chi.Mux
 
 func cartEndpoint(handler *handlers.HTTPHandler) http.Handler {
 	router := chi.NewRouter()
+	// router.Use(helper.LogRequest)
 	router.Post("/add", handler.AddToCart)
 	router.Delete("/delete/1", handler.DeleteAnItemFromCart)
 	router.Delete("/delete/all", handler.DeleteAllCartItems)

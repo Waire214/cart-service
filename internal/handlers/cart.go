@@ -11,12 +11,24 @@ import (
 
 func (handler *HTTPHandler) AddToCart(w http.ResponseWriter, r *http.Request) {
 	cart := domain.Cart{}
-	newCart, err := handler.cartService.AddToCart(cart)
+	err := json.NewDecoder(r.Body).Decode(&cart)
 	if err != nil {
-		fmt.Println(err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err)
 		return
 	}
-	json.NewDecoder(r.Body).Decode(&newCart)
+	newCart, err := handler.cartService.AddToCart(cart)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	json.NewEncoder(w).Encode(newCart)
 }
 
 func (handler *HTTPHandler) DeleteAnItemFromCart(w http.ResponseWriter, r *http.Request) {
@@ -51,6 +63,7 @@ func (handler *HTTPHandler) UpdateACartItem(w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(updateResponse)
 
 }
+
 // AddToCart(domain.Cart) (domain.Cart, error)
 // DeleteAnItemFromCart(domain.Cart, string) (string, error)
 // DeleteAllCartItems([]domain.Cart) (string, error)

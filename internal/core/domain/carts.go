@@ -10,12 +10,12 @@ type Cart struct {
 	Reference   string `json:"reference"`
 	ProductId   string `json:"product_id"`
 	ProductName string `json:"product_name"`
-	Quantity    int    `json:"quantity"`
-	Price       int    `json:"price"`
+	Quantity    int    `json:"quantity" validate:"min=8"`
+	Price       int    `json:"price" validate:"min=2"`
 }
 
-func NewCart(productId, productName string, quantity, price int) Cart {
-	return Cart{
+func NewCart(productId, productName string, quantity, price int) *Cart {
+	return &Cart{
 		Reference:   uuid.New().String(),
 		ProductId:   productId,
 		ProductName: productName,

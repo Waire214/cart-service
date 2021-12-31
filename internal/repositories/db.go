@@ -4,9 +4,11 @@ import (
 	"errors"
 	"fmt"
 
+	"cart/helper"
+	"cart/internal/core/domain"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq" //postgres driver
-	"cart/helper"
 )
 
 
@@ -45,5 +47,5 @@ func databaseCredentials(mode, dbhost, user, dbname, password string) string {
 }
 
 func autoMigrateTables(conn *gorm.DB) {
-	conn.AutoMigrate("")
+	conn.AutoMigrate(&domain.Cart{})
 }

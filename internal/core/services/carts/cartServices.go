@@ -1,9 +1,9 @@
 package services
 
 import (
+	"cart/helper"
 	"cart/internal/core/domain"
 	"cart/internal/core/ports/cartPort"
-	"errors"
 )
 
 type cartService struct {
@@ -17,37 +17,26 @@ func NewCartService(cartRepository cartPort.CartRepository) *cartService {
 }
 
 func (serve *cartService) AddToCart(cart domain.Cart) (domain.Cart, error) {
-	cart, err := serve.cartRepository.AddToCart(cart)
-	if err != nil {
-		return domain.Cart{}, errors.New("err")
+
+	if err := helper.ValidateStruct(cart); err != nil {
+		return domain.Cart{}, err
 	}
-	return cart, nil
+	return serve.cartRepository.AddToCart(cart)
 }
 
-func (serve *cartService) DeleteAnItemFromCart(cart domain.Cart,reference string) (string, error) {
-	deleteResponse, err := serve.cartRepository.DeleteAnItemFromCart(cart, reference)
-	if err != nil {
-		return err.Error(), errors.New("err")
-	}
-	return deleteResponse, nil
+func (serve *cartService) DeleteAnItemFromCart(cart domain.Cart, reference string) (string, error) {
+	return serve.cartRepository.DeleteAnItemFromCart(cart, reference)
 }
 
 func (serve *cartService) DeleteAllCartItems(carts []domain.Cart) (string, error) {
-	deleteResponse, err := serve.cartRepository.DeleteAllCartItems(carts)
-	if err != nil {
-		return err.Error(), errors.New("err")
-	}
-	return deleteResponse, nil
+	return serve.cartRepository.DeleteAllCartItems(carts)
 }
 
 func (serve *cartService) UpdateACartItem(cart domain.Cart, reference string) (string, error) {
-	updateResponse, err := serve.cartRepository.UpdateACartItem(cart, reference)
-	if err != nil {
-		return err.Error(), errors.New("err")
-	}
-	return updateResponse, nil
+	return serve.cartRepository.UpdateACartItem(cart, reference)
 
 }
+
 // AddToCart(domain.Cart) (domain.Cart, error)
 // DeleteAnItemFromCart(domain.Cart, string) (string, error)
 // DeleteAllCartItems([]domain.Cart) (string, error)

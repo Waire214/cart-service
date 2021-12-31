@@ -74,7 +74,6 @@ func LogRequest(next http.Handler) http.Handler {
 			TimeStamp:       time.Now().Format(time.RFC3339),
 		})
 		if err != nil {
-			// log.Fatal(err)
 			log.Println(err.Error())
 			w.WriteHeader(http.StatusInternalServerError)
 		}

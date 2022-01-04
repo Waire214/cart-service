@@ -35,7 +35,7 @@ func cartEndpoint(handler *handlers.HTTPHandler) http.Handler {
 	router := chi.NewRouter()
 	// router.Use(helper.LogRequest)
 	router.Post("/add", handler.AddToCart)
-	router.Delete("/delete/1", handler.DeleteAnItemFromCart)
+	router.Delete("/delete/1/{reference}", handler.DeleteAnItemFromCart)
 	router.Delete("/delete/all", handler.DeleteAllCartItems)
 	router.Put("/update/1", handler.UpdateACartItem)
 	return router

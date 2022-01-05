@@ -32,11 +32,13 @@ func (serve *cartService) DeleteAllCartItems(carts []domain.Cart) (string, error
 	return serve.cartRepository.DeleteAllCartItems(carts)
 }
 
-func (serve *cartService) UpdateACartItem(cart domain.Cart, reference string) (string, error) {
-	return serve.cartRepository.UpdateACartItem(cart, reference)
+func (serve *cartService) ReduceQuantity(cart domain.Cart, reference string) (string, error) {
+	return serve.cartRepository.ReduceQuantity(cart, reference)
 
 }
-
+func (serve *cartService) IncreaseQuantity(cart domain.Cart, reference string) (string, error) {
+	return serve.cartRepository.IncreaseQuantity(cart, reference)
+}
 // AddToCart(domain.Cart) (domain.Cart, error)
 // DeleteAnItemFromCart(domain.Cart, string) (string, error)
 // DeleteAllCartItems([]domain.Cart) (string, error)

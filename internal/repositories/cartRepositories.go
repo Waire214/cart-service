@@ -38,15 +38,23 @@ func (r *cartInfra) DeleteAllCartItems(carts []domain.Cart) (string, error) {
 	return "empty", nil
 }
 
-func (r *cartInfra) UpdateACartItem(cart domain.Cart, reference string) (string, error) {
+func (r *cartInfra) ReduceQuantity(cart domain.Cart, reference string) (string, error) {
 	// get the product price, insert later
 	if err := r.db.Model(&cart).Where("reference = ?", reference).Select("Quantity", "Price").Updates(domain.Cart{Quantity: cart.Quantity - 1, Price: cart.Quantity * cart.Price}).Error; err != nil {
 		return "domain.Cart{}", helper.PrintErrorMessage(helper.DatabaseError, err.Error())
 	}
 
-	return "updated", nil
+	return "UPDATE: reduced item quantity", nil
 }
 
+func (r *cartInfra) IncreaseQuantity(cart domain.Cart, reference string) (string, error) {
+	//add to the quantity of an item
+	if err := r.db.Model(&cart).Where("reference = ?", reference).Select("Quantity", "Price").Updates(domain.Cart{Quantity: cart.Quantity + 1, Price: cart.Quantity * cart.Price}).Error; err != nil {
+		return "domain.Cart{}", helper.PrintErrorMessage(helper.DatabaseError, err.Error())
+	}
+
+	return "UPDATE: increased item quantity", nil
+}
 // Select with Struct (select zero value fields)
 // db.Model(&user).Select("Name", "Age").Updates(User{Name: "new_name", Age: 0})
 // UPDATE users SET name='new_name', age=0 WHERE id=111;

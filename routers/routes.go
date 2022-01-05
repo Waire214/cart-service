@@ -37,6 +37,7 @@ func cartEndpoint(handler *handlers.HTTPHandler) http.Handler {
 	router.Post("/add", handler.AddToCart)
 	router.Delete("/delete/1/{reference}", handler.DeleteAnItemFromCart)
 	router.Delete("/delete/all", handler.DeleteAllCartItems)
-	router.Put("/update/1", handler.UpdateACartItem)
+	router.Put("/update/reduce/1", handler.ReduceQuantity)
+	router.Put("/update/increase/1", handler.IncreaseQuantity)
 	return router
 }

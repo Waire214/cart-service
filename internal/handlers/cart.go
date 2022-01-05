@@ -52,10 +52,21 @@ func (handler *HTTPHandler) DeleteAllCartItems(w http.ResponseWriter, r *http.Re
 	json.NewEncoder(w).Encode(deleteResponse)
 }
 
-func (handler *HTTPHandler) UpdateACartItem(w http.ResponseWriter, r *http.Request) {
+func (handler *HTTPHandler) ReduceQuantity(w http.ResponseWriter, r *http.Request) {
 	cart := domain.Cart{}
 	reference := chi.URLParam(r, "reference")
-	updateResponse, err := handler.cartService.UpdateACartItem(cart, reference)
+	updateResponse, err := handler.cartService.ReduceQuantity(cart, reference)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	json.NewEncoder(w).Encode(updateResponse)
+
+}
+func (handler *HTTPHandler) IncreaseQuantity(w http.ResponseWriter, r *http.Request) {
+	cart := domain.Cart{}
+	reference := chi.URLParam(r, "reference")
+	updateResponse, err := handler.cartService.IncreaseQuantity(cart, reference)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -67,4 +78,4 @@ func (handler *HTTPHandler) UpdateACartItem(w http.ResponseWriter, r *http.Reque
 // AddToCart(domain.Cart) (domain.Cart, error)
 // DeleteAnItemFromCart(domain.Cart, string) (string, error)
 // DeleteAllCartItems([]domain.Cart) (string, error)
-// UpdateACartItem(domain.Cart, string) (string, error)
+// ReduceQuantity(domain.Cart, string) (string, error)

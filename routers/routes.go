@@ -1,6 +1,7 @@
 package routers
 
 import (
+	_"cart/docs"
 	"cart/internal/handlers"
 	"net/http"
 

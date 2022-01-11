@@ -1,0 +1,149 @@
+basePath: /v1
+definitions:
+  domain.Cart:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        type: string
+      id:
+        type: integer
+      price:
+        type: integer
+      product_id:
+        type: string
+      product_name:
+        type: string
+      quantity:
+        type: integer
+      reference:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+host: petstore.swagger.io
+info:
+  contact:
+    email: oluwatosinthompson3@gmail.com
+    name: Oluwatosin Oghenewaire Thompson
+  description: This is the barafiri cart microservice API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: GPI Barafiri Cart API
+  version: "1.0"
+paths:
+  /cart/add:
+    post:
+      consumes:
+      - application/json
+      description: Accept JSON data of cart data and returns valid response
+      parameters:
+      - description: Add items to cart
+        in: body
+        name: Cart
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Cart'
+      - description: Authentication Token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Item added to cart
+          schema:
+            $ref: '#/definitions/domain.Cart'
+      summary: handles adding items to cart
+      tags:
+      - Cart
+  /cart/delete/1/{reference}:
+    delete:
+      consumes:
+      - application/json
+      description: Take the item-reference as a PARAMETER and returns valid response
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: deleted
+          schema:
+            $ref: '#/definitions/domain.Cart'
+      summary: handles deleting an item from cart
+      tags:
+      - Cart
+  /cart/delete/all:
+    delete:
+      consumes:
+      - application/json
+      description: deletes all items from cart and returns valid response
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: all cart items deleted
+          schema:
+            $ref: '#/definitions/domain.Cart'
+      summary: handles deleting all item from cart
+      tags:
+      - Cart
+  /cart/update/increase/1:
+    put:
+      consumes:
+      - application/json
+      description: Accept JSON data of cart data, takes the reference as a parameter
+        to query the database and returns valid response
+      parameters:
+      - description: Update cart items
+        in: body
+        name: Cart
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Cart'
+      - description: Authentication Token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Item Updated
+          schema:
+            $ref: '#/definitions/domain.Cart'
+      summary: handles updating items in cart
+      tags:
+      - Cart
+  /cart/update/reduce/1:
+    put:
+      consumes:
+      - application/json
+      description: Accept JSON data of cart data, takes the reference as a parameter
+        to query the database and returns valid response
+      parameters:
+      - description: Update cart items
+        in: body
+        name: Cart
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Cart'
+      - description: Authentication Token
+        in: header
+        name: authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Item Updated
+          schema:
+            $ref: '#/definitions/domain.Cart'
+      summary: handles updating items in cart
+      tags:
+      - Cart
+swagger: "2.0"

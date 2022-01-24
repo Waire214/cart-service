@@ -4,7 +4,12 @@ import (
 	"cart/helper"
 	"cart/internal/core/domain"
 	"cart/internal/core/ports/cartPort"
+	"context"
+	"encoding/json"
+	"fmt"
+	"time"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/jinzhu/gorm"
 )
 
@@ -55,33 +60,45 @@ func (r *cartInfra) IncreaseQuantity(cart domain.Cart, reference string) (string
 
 	return "UPDATE: increased item quantity", nil
 }
-// Select with Struct (select zero value fields)
-// db.Model(&user).Select("Name", "Age").Updates(User{Name: "new_name", Age: 0})
-// UPDATE users SET name='new_name', age=0 WHERE id=111;
-// db.Model(&user).Updates(User{Name: "hello", Age: 18, Active: false})
 
-// AddToCart(domain.Cart) (domain.Cart, error)
-// DeleteAnItemFromCart(domain.Cart, string) (string, error)
-// DeleteAllCartItems([]domain.Cart) (string, error)
-// UpdateACartItem(domain.Cart, string) (string, error)
+type messageRedis struct {
+	MessageToSub string `json:"message"`
+}
 
-// productId string, productName string, quantity int, price int, createdAt time.Time, updatedAt time.Time, deletedAt time.Time
+func Idle(db *gorm.DB) (domain.Cart, error) {
+	var cart domain.Cart
+	var redisClient = redis.NewClient(&redis.Options{
+		Addr: "localhost:6379",
+	})
+	var f func()
+	var t *time.Timer
+	fmt.Println("redis started")
+	if time.Now().Hour() == 16 {
+		fmt.Println(db)
+		if err := db.Find(&cart).Where("created_at=?", cart.CreatedAt.Hour() >= 72).Error; err != nil {
+			return domain.Cart{}, helper.PrintErrorMessage(helper.DatabaseError, err.Error())
+		}
+		fmt.Println("middle of redis")
+		f = func() {
+			payload, err := json.Marshal(messageRedis{MessageToSub: "I checked the database if the time is 6 PM and sent a notification about a cart that has been unattended to after 3 days"})
+			if err != nil {
+				panic(err)
+			}
 
-// You can find soft deleted records with Unscoped
-// db.Unscoped().Where("age = 20").Find(&users)
-// SELECT * FROM users WHERE age = 20;
+			fmt.Println("publishing to redis")
+			if err := redisClient.Publish(context.Background(), "send-idle-notification-message", payload).Err(); err != nil {
+				panic(err)
+			}
+			fmt.Println(messageRedis{})
+			t = time.AfterFunc(time.Duration(72)*time.Hour, f)
+		}
+		t = time.AfterFunc(time.Duration(7)*time.Second, f)
+		defer t.Stop()
+		fmt.Println("redis ended")
+		//simulate doing stuff
+		time.Sleep(168 * time.Hour)
+	
+	}
+	return domain.Cart{}, nil
+}
 
-// You can delete matched records permanently with Unscoped
-// db.Unscoped().Delete(&order)
-// DELETE FROM orders WHERE id=10;
-
-// db.Delete(&user)
-// UPDATE users SET deleted_at="2013-10-29 10:23" WHERE id = 111;
-
-// Batch Delete
-// db.Where("age = ?", 20).Delete(&User{})
-// UPDATE users SET deleted_at="2013-10-29 10:23" WHERE age = 20;
-
-// Soft deleted records will be ignored when querying
-// db.Where("age = 20").Find(&user)
-// SELECT * FROM users WHERE age = 20 AND deleted_at IS NULL;

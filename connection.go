@@ -19,6 +19,8 @@ func allConnection() {
 	if err != nil {
 		helper.PrintErrorMessage("404", err.Error())
 	}
+
+	repositories.Idle(db)
 	//repositories connection
 	cartRepository := repositories.NewCartRepositories(db)
 
@@ -35,7 +37,6 @@ func allConnection() {
 		fmt.Println("App running on " + helper.Config.Address + ":" + helper.Config.Port)
 		helper.LogEvent("Info", fmt.Sprintf("Started PlatformServiceApplication on "+helper.Config.Address+":"+helper.Config.Port+" in "+time.Since(time.Now()).String()))
 		log.Fatal(http.ListenAndServe(":"+helper.Config.Port, helper.LogRequest(router)))
-		// log.Fatal(http.ListenAndServe(":"+helper.Config.Port, router))
 	}
 
 }
